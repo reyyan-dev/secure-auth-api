@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+secure_auth.db
+.pytest_cache/
+.coverage
