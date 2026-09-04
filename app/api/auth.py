@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.api.dependencies import get_current_user_id
 from app.db.database import get_db
 from app.models.user import User
-from app.schemas.auth import UserCreate, UserLogin, UserResponse
+from app.schemas.auth import TokenResponse, UserCreate, UserLogin, UserResponse
 from app.services.jwt import create_access_token
 from app.services.security import hash_password, verify_password
 
@@ -45,7 +45,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     user = (
         db.query(User)
