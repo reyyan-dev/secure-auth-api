@@ -1,11 +1,4 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
-
-def test_register_user():
+def test_register_user(client):
     response = client.post(
         "/auth/register",
         json={
@@ -24,7 +17,16 @@ def test_register_user():
     assert "hashed_password" not in data
 
 
-def test_login_user():
+def test_login_user(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "test@example.com",
+            "username": "testuser",
+            "password": "TestPassword123",
+        },
+    )
+
     response = client.post(
         "/auth/login",
         json={
@@ -41,7 +43,16 @@ def test_login_user():
     assert data["token_type"] == "bearer"
 
 
-def test_login_wrong_password():
+def test_login_wrong_password(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "test@example.com",
+            "username": "testuser",
+            "password": "TestPassword123",
+        },
+    )
+
     response = client.post(
         "/auth/login",
         json={
@@ -53,7 +64,16 @@ def test_login_wrong_password():
     assert response.status_code == 401
 
 
-def test_protected_me_endpoint():
+def test_protected_me_endpoint(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "test@example.com",
+            "username": "testuser",
+            "password": "TestPassword123",
+        },
+    )
+
     login_response = client.post(
         "/auth/login",
         json={
@@ -79,7 +99,7 @@ def test_protected_me_endpoint():
     assert data["username"] == "testuser"
 
 
-def test_protected_me_without_token():
+def test_protected_me_without_token(client):
     response = client.get("/auth/me")
 
     assert response.status_code == 401
