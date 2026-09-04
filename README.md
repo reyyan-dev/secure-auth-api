@@ -58,6 +58,7 @@ secure-auth-api/
 ├── .env.example
 ├── .gitignore
 └── README.md
+```
 ## Local Setup
 
 ### 1. Clone the repository
@@ -121,7 +122,7 @@ The test suite covers:
 - Invalid password handling
 - Protected `/auth/me` endpoint
 - Unauthorized access without a token
-- Isolated test database usage
+- Isolated temporary test database per test
 
 ## Security
 
