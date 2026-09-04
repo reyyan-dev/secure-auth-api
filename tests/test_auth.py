@@ -103,3 +103,75 @@ def test_protected_me_without_token(client):
     response = client.get("/auth/me")
 
     assert response.status_code == 401
+
+
+def test_register_duplicate_email(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "test@example.com",
+            "username": "testuser",
+            "password": "TestPassword123",
+        },
+    )
+
+    response = client.post(
+        "/auth/register",
+        json={
+            "email": "test@example.com",
+            "username": "anotheruser",
+            "password": "TestPassword123",
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Email or username already registered"
+
+
+def test_login_nonexistent_email(client):
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "doesnotexist@example.com",
+            "password": "TestPassword123",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
+
+
+def test_protected_me_with_invalid_token(client):
+    response = client.get(
+        "/auth/me",
+        headers={
+            "Authorization": "Bearer invalid-token"
+        },
+    )
+
+    assert response.status_code == 401
+
+
+def test_register_invalid_input(client):
+    response = client.post(
+        "/auth/register",
+        json={
+            "email": "not-an-email",
+            "username": "ab",
+            "password": "short",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_login_invalid_input(client):
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "not-an-email",
+            "password": "short",
+        },
+    )
+
+    assert response.status_code == 422
