@@ -11,6 +11,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-test-secret-key-for-tests
 
     steps:
       - name: Checkout repository
