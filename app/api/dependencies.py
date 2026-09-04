@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+import jwt
 
 from app.services.jwt import decode_access_token
 
@@ -24,9 +25,8 @@ def get_current_user_id(
 
         return int(user_id)
 
-    except Exception:
+    except (jwt.InvalidTokenError, ValueError):
         raise HTTPException(
             status_code=401,
             detail="Invalid or expired token",
         )
-
