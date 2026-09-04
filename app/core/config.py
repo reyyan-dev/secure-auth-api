@@ -3,9 +3,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "Secure Auth API"
-    debug: bool = True
+    debug: bool = False
     database_url: str = "sqlite:///./secure_auth.db"
-    secret_key: str = "change-this-secret-key"
+    secret_key: str
     access_token_expire_minutes: int = 30
 
     model_config = SettingsConfigDict(
