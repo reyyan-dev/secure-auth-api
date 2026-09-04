@@ -1,15 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.api.dependencies import get_current_user_id
 from app.db.database import get_db
 from app.models.user import User
-from app.schemas.auth import UserCreate, UserResponse
-from app.services.security import hash_password
 from app.schemas.auth import UserCreate, UserLogin, UserResponse
-from app.services.security import hash_password, verify_password
 from app.services.jwt import create_access_token
-from app.api.dependencies import get_current_user_id
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+from app.services.security import hash_password, verify_password
+
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
 
 
 @router.post("/register", response_model=UserResponse, status_code=201)
@@ -40,6 +43,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+
 @router.post("/login")
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     user = (
@@ -53,6 +58,7 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
             status_code=401,
             detail="Invalid email or password",
         )
+
     if not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(
             status_code=401,
@@ -67,6 +73,8 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
         "access_token": token,
         "token_type": "bearer",
     }
+
+
 @router.get("/me", response_model=UserResponse)
 def get_current_user(
     user_id: int = Depends(get_current_user_id),
